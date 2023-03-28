@@ -47,6 +47,38 @@ class MainActivity : AppCompatActivity() {
 
 
         Log.d(TAG, "Start!")
+        //ParseKorea()
+
+        parseSGC()
+
+    }
+
+    private fun parseSGC() {
+        val canadaSgc = ArrayList<StateData>()
+        BufferedReader(InputStreamReader(this.assets.open("CanadaSGC.txt"))).use {
+            it.lines().forEach { line ->
+                val str = line.split(",")
+                if (str[0] == "2") { //주코드 (province)
+                    canadaSgc.add(StateData(str[3], str[2], ArrayList()))
+                } else if(str[0] == "3"){ //카운티 (division)
+                    canadaSgc.forEach { state->
+                        if (state.code == str[2].substring(0, 2))
+                            state.counties.add(CountyData(str[3], str[2]))
+                    }
+                }
+            }
+        }
+
+
+        canadaSgc.forEach { state ->
+            Log.i(TAG, "${state.code} ${state.state}")
+            state.counties.forEach { county ->
+                Log.i(TAG, "    ${county.FipsCode} ${county.county}")
+            }
+        }
+    }
+
+    private fun ParseKorea() {
         var temp = ""
         val usFips2 = ArrayList<StateData>()
         BufferedReader(InputStreamReader(this.assets.open("kr_code2.txt"),"MS949")).use {
